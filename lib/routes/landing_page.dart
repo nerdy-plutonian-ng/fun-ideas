@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import '../utilities/auth_ops.dart';
+import '../utilities/utils.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -9,11 +11,27 @@ class LandingPage extends StatelessWidget {
     await authOps.open();
     final user = authOps.getUser();
     if (user.firstName.isEmpty) {
-      Navigator.pushNamed(
-          context, '/setUpPage');
+      Navigator.pushNamed(context, '/setUpPage');
     } else {
-      print(user.toMap());
-      Navigator.pushNamedAndRemoveUntil(context, '/homePage', (route) => false);
+      if (user.hasBiometricLock) {
+        var localAuth = LocalAuthentication();
+        try {
+          bool didAuthenticate = await localAuth.authenticate(
+              localizedReason: 'Please authenticate to get in the app',
+              biometricOnly: true);
+          if(didAuthenticate){
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/homePage', (route) => false);
+          } else {
+            showSnackBar(context: context, message: 'Authentication Failed!',error: true);
+          }
+        } catch (e) {
+          print(e.toString());
+        }
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/homePage', (route) => false);
+      }
     }
   }
 

@@ -38,6 +38,10 @@ class DBOps {
     return await db.delete('FunIdeas',where: 'id = ?',whereArgs: [id]);
   }
 
+  Future<int> updateActivityStatus(String id,int status) async {
+    return await db.update('FunIdeas', {'completed' : status},where: 'id = ?',whereArgs: [id]);
+  }
+
   Future<bool> activityExists(String activity) async {
     return (await db.query('FunIdeas',where: 'activity = ?',whereArgs: [activity])).isNotEmpty;
   }

@@ -21,6 +21,7 @@ class _IdeaPageState extends State<IdeaPage> {
   var isFavourited = false;
   String nextActivity = '';
   DBOps dbOps = DBOps();
+  var nextText = 'Not fun. Another';
 
    getNextActivity() async {
     setState(() {
@@ -33,6 +34,7 @@ class _IdeaPageState extends State<IdeaPage> {
         setState(() {
           nextActivity = jsonDecode(response.body)['activity'];
           stage = httpRequestStages.fetched;
+          nextText = 'Not fun. Another';
         });
       } else {
         setState(() {
@@ -64,6 +66,7 @@ class _IdeaPageState extends State<IdeaPage> {
     if (res > 0) {
       setState(() {
         isFavourited = !isFavourited;
+        nextText = 'Another';
       });
     } else {
       showSnackBar(context: context,message: 'Failed adding to favourites',error: true);
@@ -137,7 +140,7 @@ class _IdeaPageState extends State<IdeaPage> {
               child: TextButton.icon(
                   onPressed: getNextActivity,
                   icon: const Icon(Icons.autorenew),
-                  label: const Text('Not fun. Another')),
+                  label: Text(nextText)),
             ),
           )
         ],

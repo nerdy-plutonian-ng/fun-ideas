@@ -58,19 +58,31 @@ class _IdeaPageState extends State<IdeaPage> {
   }
 
   void addToFaves() async {
-    final res = await dbOps.addToDB(Activity(
-        id: const Uuid().v4().toString(),
-        activity: nextActivity,
-        completed: 0));
-    print(res);
-    if (res > 0) {
-      setState(() {
-        isFavourited = !isFavourited;
-        nextText = 'Another';
-      });
-    } else {
-      showSnackBar(context: context,message: 'Failed adding to favourites',error: true);
-    }
+     if(await dbOps.activityExists(nextActivity)){
+       final res = await dbOps.deleteActivity(nextActivity);
+       if(res == 1){
+         setState(() {
+           isFavourited = !isFavourited;
+           nextText = 'Not fun. Another';
+         });
+       } else {
+         showSnackBar(context: context,message: 'Failed removing from favourites',error: true);
+       }
+     } else {
+       final res = await dbOps.addToDB(Activity(
+           id: const Uuid().v4().toString(),
+           activity: nextActivity,
+           completed: 0));
+       if (res > 0) {
+         setState(() {
+           isFavourited = !isFavourited;
+           nextText = 'Another';
+         });
+       } else {
+         showSnackBar(context: context,message: 'Failed adding to favourites',error: true);
+       }
+     }
+
   }
 
   void init() async  {

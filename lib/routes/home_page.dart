@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/idea_page.dart';
 import '../widgets/faves_page.dart';
 import '../utilities/app_themes.dart';
+import '../utilities/auth_ops.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,6 +15,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var selectedTabIndex = 0;
+  var name = '';
+
+  init() async {
+    final authOps = AuthOps();
+    await authOps.open();
+    final user = authOps.getUser();
+    setState(() {
+      name = user.firstName;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +41,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Fun Ideas',style: Theme.of(context).textTheme.headline5,),
+                child: Text(selectedTabIndex == 0 ? 'Fun Ideas' : '$name\'s Faves',style: Theme.of(context).textTheme.headline5,),
               ),
               Expanded(child: selectedTabIndex == 0 ? const IdeaPage() : const FavesPage(),)
             ],
